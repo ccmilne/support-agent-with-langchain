@@ -17,7 +17,7 @@ from langchain.embeddings import VertexAIEmbeddings
 from langchain.chat_models import ChatVertexAI
 
 ### Env Vars
-vertexai_api_key = os.getenv('VERTEXAI_API_KEY')
+# vertexai_api_key = os.getenv('VERTEXAI_API_KEY')
 
 ### Prompt Design
 support_template = """As a Verizon customer service agent, your goal is to provide accurate and helpful information about Verizon products and telecommunications concepts.
@@ -48,8 +48,9 @@ def initialize_database():
         splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)
         docs = splitter.split_documents(loaded)
         db = Chroma.from_documents(docs, VertexAIEmbeddings(), collection_name=new_name)
+    return db
 
-def initialize_agent(db, **kwargs):
+def initialize_verizon_agent(db, **kwargs):
     """_summary_
 
     Args:
@@ -102,12 +103,12 @@ with streamlit.form("answer_form", clear_on_submit=True):
 
     #Prep resources
     vectordb = initialize_database()
-    agent = initialize_agent(vectordb, prompts)
+    agent = initialize_verizon_agent(db=vectordb, kwargs=prompts)
 
-    gcp_key = streamlit.text_input('OpenAI API Key', type='password', disabled=not question, value=streamlit.secrets['VERTEXAI_API_KEY'])
+    # gcp_key = streamlit.text_input('OpenAI API Key', type='password', disabled=not question, value=streamlit.secrets['VERTEXAI_API_KEY'])
     submitted = streamlit.form_submit_button("SUBMIT")
 
-    if submitted and gcp_key:
+    if submitted: # and gcp_key:
         with streamlit.spinner("Answering ..."):
             response = agent.run(question)
             if response:
