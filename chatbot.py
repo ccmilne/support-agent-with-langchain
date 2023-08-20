@@ -48,6 +48,7 @@ def initialize_database():
         splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)
         docs = splitter.split_documents(loaded)
         db = Chroma.from_documents(docs, VertexAIEmbeddings(), collection_name=new_name)
+        print(f"File loaded: {file}")
     return db
 
 def initialize_verizon_agent(db, **kwargs):
